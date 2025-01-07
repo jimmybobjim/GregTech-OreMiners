@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "ModelManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
