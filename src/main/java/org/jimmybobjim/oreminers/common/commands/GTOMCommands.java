@@ -16,7 +16,7 @@ import java.util.function.Function;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
-public class GTOreMinersCommands {
+public class GTOMCommands {
     public static void register(RegisterCommandsEvent event) {
         event.getDispatcher().register(literal("gt_oreminers")
                 .then(literal("vein_core")

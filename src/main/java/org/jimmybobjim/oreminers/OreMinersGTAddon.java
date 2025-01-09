@@ -4,9 +4,9 @@ import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import net.minecraft.data.recipes.FinishedRecipe;
-import org.jimmybobjim.oreminers.api.tagPrefix.GTOreMinersTagPrefixes;
-import org.jimmybobjim.oreminers.common.blockEntity.GTOreMinersBlockEntities;
-import org.jimmybobjim.oreminers.common.data.GTOreMinersMaterials;
+import org.jimmybobjim.oreminers.api.tagPrefix.GTOMTagPrefixes;
+import org.jimmybobjim.oreminers.common.blockEntity.GTOMBlockEntities;
+import org.jimmybobjim.oreminers.common.data.GTOMMaterials;
 
 import java.util.function.Consumer;
 
@@ -20,8 +20,8 @@ public class OreMinersGTAddon implements IGTAddon {
 
     @Override
     public void initializeAddon() {
-        GTOreMinersMaterials.init();
-        GTOreMinersBlockEntities.init();
+        GTOMMaterials.init();
+        GTOMBlockEntities.init();
     }
 
     @Override
@@ -31,7 +31,7 @@ public class OreMinersGTAddon implements IGTAddon {
 
     @Override
     public void registerTagPrefixes() {
-        GTOreMinersTagPrefixes.init();
+        GTOMTagPrefixes.init();
     }
 
     @Override

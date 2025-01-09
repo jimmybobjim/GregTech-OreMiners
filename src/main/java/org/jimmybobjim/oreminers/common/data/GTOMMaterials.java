@@ -17,14 +17,14 @@ import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import net.minecraft.world.level.block.Blocks;
 import org.jimmybobjim.oreminers.GTOreMiners;
-import org.jimmybobjim.oreminers.api.propertyKeys.GTOreMinersPropertyKeys;
+import org.jimmybobjim.oreminers.api.propertyKeys.GTOMPropertyKeys;
 import org.jimmybobjim.oreminers.api.propertyKeys.VeinCoreBlockProperty;
-import org.jimmybobjim.oreminers.api.tagPrefix.GTOreMinersTagPrefixes;
+import org.jimmybobjim.oreminers.api.tagPrefix.GTOMTagPrefixes;
 import org.jimmybobjim.oreminers.common.block.VeinCoreBlock;
 
 import java.util.Map;
 
-public class GTOreMinersMaterials {
+public class GTOMMaterials {
     private static final ImmutableTable.Builder<TagPrefix, Material, BlockEntry<VeinCoreBlock>> BUILDER = ImmutableTable.builder();
     public static ImmutableTable<TagPrefix, Material, BlockEntry<VeinCoreBlock>> VEIN_CORES;
 
@@ -35,8 +35,8 @@ public class GTOreMinersMaterials {
         for (MaterialRegistry registry : GTCEuAPI.materialManager.getRegistries()) {
             GTRegistrate registrate = registry.getRegistrate();
             for (Material material : registry.getAllMaterials()) {
-                if (material.hasProperty(GTOreMinersPropertyKeys.VEIN_CORE_BLOCK)) {
-                    for (Map.Entry<TagPrefix, GTOreMinersTagPrefixes.VeinCoreData> entry : GTOreMinersTagPrefixes.VEIN_CORES.entrySet()) {
+                if (material.hasProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK)) {
+                    for (Map.Entry<TagPrefix, GTOMTagPrefixes.VeinCoreData> entry : GTOMTagPrefixes.VEIN_CORES.entrySet()) {
                         if (entry.getKey().isIgnored(material)) continue;
                         registerVeinCoreBlock(GTOreMiners.REGISTRATE, material, entry.getKey(), entry.getValue());
                     }
@@ -45,7 +45,7 @@ public class GTOreMinersMaterials {
         }
     }
 
-    public static void registerVeinCoreBlock(GTRegistrate registrate, Material material, TagPrefix oreTag, GTOreMinersTagPrefixes.VeinCoreData data) {
+    public static void registerVeinCoreBlock(GTRegistrate registrate, Material material, TagPrefix oreTag, GTOMTagPrefixes.VeinCoreData data) {
         GTOreMiners.LOGGER.info("registering core block on material {}", material);
 
         TagPrefix.OreType oreType = data.oreType();
@@ -53,7 +53,7 @@ public class GTOreMinersMaterials {
 
         BlockEntry<VeinCoreBlock> veinCoreBlock = registrate
                 .block(
-                        "%s%s_vein_core".formatted(oreTag != GTOreMinersTagPrefixes.stoneVeinCore ? FormattingUtil.toLowerCaseUnder(stoneName) + "_" : "", material.getName()),
+                        "%s%s_vein_core".formatted(oreTag != GTOMTagPrefixes.stoneVeinCore ? FormattingUtil.toLowerCaseUnder(stoneName) + "_" : "", material.getName()),
                         properties -> new VeinCoreBlock(properties, oreTag, material, true)
                 )
                 .initialProperties( () -> {
@@ -94,6 +94,6 @@ public class GTOreMinersMaterials {
     }
 
     public static void setVeinCore(Material material, int level) {
-        material.setProperty(GTOreMinersPropertyKeys.VEIN_CORE_BLOCK, new VeinCoreBlockProperty(level));
+        material.setProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK, new VeinCoreBlockProperty(level));
     }
 }

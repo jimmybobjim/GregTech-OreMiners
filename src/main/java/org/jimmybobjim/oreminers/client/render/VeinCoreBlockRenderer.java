@@ -18,8 +18,8 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import org.jimmybobjim.oreminers.GTOreMiners;
 import org.jimmybobjim.oreminers.api.propertyKeys.VeinCoreBlockProperty;
-import org.jimmybobjim.oreminers.api.propertyKeys.GTOreMinersPropertyKeys;
-import org.jimmybobjim.oreminers.api.tagPrefix.GTOreMinersTagPrefixes;
+import org.jimmybobjim.oreminers.api.propertyKeys.GTOMPropertyKeys;
+import org.jimmybobjim.oreminers.api.tagPrefix.GTOMTagPrefixes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class VeinCoreBlockRenderer {
 
     // TODO different textures for different tiers of vein cores (and just completely remake the existing textures)
     public static void cloneBlockModel(ResourceLocation modelId, TagPrefix prefix, Material material) {
-        VeinCoreBlockProperty property = material.getProperty(GTOreMinersPropertyKeys.VEIN_CORE_BLOCK);
+        VeinCoreBlockProperty property = material.getProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK);
         Preconditions.checkNotNull(property, "material %s has no ore property, but needs one for an ore model!".formatted(material.getName()));
 
         // read the base ore model JSON
@@ -70,7 +70,7 @@ public class VeinCoreBlockRenderer {
         JsonObject newJson = original.deepCopy();
         JsonObject children = newJson.getAsJsonObject("children");
         // add the base stone texture.
-        children.getAsJsonObject("base_stone").addProperty("parent", GTOreMinersTagPrefixes.VEIN_CORES.get(prefix).oreType().baseModelLocation().toString());
+        children.getAsJsonObject("base_stone").addProperty("parent", GTOMTagPrefixes.VEIN_CORES.get(prefix).oreType().baseModelLocation().toString());
 
         GTDynamicResourcePack.addBlockModel(modelId, newJson);
     }

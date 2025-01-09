@@ -4,11 +4,11 @@ import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import org.jetbrains.annotations.ApiStatus;
-import org.jimmybobjim.oreminers.api.propertyKeys.GTOreMinersPropertyKeys;
+import org.jimmybobjim.oreminers.api.propertyKeys.GTOMPropertyKeys;
 
 import java.util.Map;
 
-public class GTOreMinersTagPrefixes {
+public class GTOMTagPrefixes {
     public static final Map<TagPrefix, VeinCoreData> VEIN_CORES = new Object2ObjectLinkedOpenHashMap<>();
 
     public record VeinCoreData(String stoneName, TagPrefix.OreType oreType) {}
@@ -42,7 +42,7 @@ public class GTOreMinersTagPrefixes {
                 .unformattedTagPath("vein_cores")
                 .langValue(FormattingUtil.toEnglishName(oreTag.name) + " %s Vein Core")
                 .unificationEnabled(true)
-                .generationCondition(material -> material.hasProperty(GTOreMinersPropertyKeys.VEIN_CORE_BLOCK));
+                .generationCondition(material -> material.hasProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK));
 
         VEIN_CORES.put(veinCoreTag, new VeinCoreData(oreTag.name(), oreType));
         return veinCoreTag;

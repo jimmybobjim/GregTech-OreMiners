@@ -16,9 +16,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.jimmybobjim.oreminers.common.commands.GTOreMinersCommands;
-import org.jimmybobjim.oreminers.common.data.GTOreMinersDatagen;
-import org.jimmybobjim.oreminers.common.data.GTOreMinersMaterials;
+import org.jimmybobjim.oreminers.common.commands.GTOMCommands;
+import org.jimmybobjim.oreminers.common.data.GTOMDatagen;
+import org.jimmybobjim.oreminers.common.data.GTOMMaterials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class GTOreMiners {
     }
 
     public GTOreMiners(FMLJavaModLoadingContext context) {
-        GTOreMinersDatagen.init();
+        GTOMDatagen.init();
         REGISTRATE.registerRegistrate();
 
         IEventBus eventBus = context.getModEventBus();
@@ -50,7 +50,7 @@ public class GTOreMiners {
         // If we want to use annotations to register event listeners,
         // we need to register our object like this!
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.addListener(GTOreMinersCommands::register);
+        MinecraftForge.EVENT_BUS.addListener(GTOMCommands::register);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -77,7 +77,7 @@ public class GTOreMiners {
 
     // This is optional, though.
     private void modifyMaterials(PostMaterialEvent event) {
-        GTOreMinersMaterials.modify(event);
+        GTOMMaterials.modify(event);
     }
 
     private void registerRecipeTypes(GTCEuAPI.RegisterEvent<ResourceLocation, GTRecipeType> event) {

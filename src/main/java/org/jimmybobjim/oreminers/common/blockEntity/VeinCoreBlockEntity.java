@@ -31,7 +31,7 @@ public class VeinCoreBlockEntity extends BlockEntity {
     }
 
     public VeinCoreBlockEntity(BlockPos pos, BlockState state) {
-        super(GTOreMinersBlockEntities.VEIN_CORE.get(), pos, state);
+        super(GTOMBlockEntities.VEIN_CORE.get(), pos, state);
     }
 
     public static double getPurity(Level level, BlockPos pos, BlockState state) {
