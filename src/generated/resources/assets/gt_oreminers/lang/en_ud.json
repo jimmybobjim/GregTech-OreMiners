@@ -1,0 +1,7 @@
+{
+  "command.gt_oreminers.vein_core.get_purity.success": "%s sı )%s( ʇɐ ʎʇıɹnԀ",
+  "command.gt_oreminers.vein_core.get_remaining.success": "%s sı )%s( ʇɐ ʎʇıɔɐdɐɔ buıuıɐɯǝᴚ",
+  "command.gt_oreminers.vein_core.not_vein_core": "ǝɹoɔ uıǝʌ ɐ ʇou sı )%s(",
+  "command.gt_oreminers.vein_core.set_purity.success": "%s oʇ %s ɯoɹɟ )%s( ʇɐ ʎʇıɹnd pǝbuɐɥƆ",
+  "command.gt_oreminers.vein_core.set_remaining.success": "%s oʇ %s ɯoɹɟ )%s( ʇɐ ʎʇıɔɐdɐɔ buıuıɐɯǝɹ pǝbuɐɥƆ"
+}
