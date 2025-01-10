@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class GTOMTagPrefixes {
     public static final Map<TagPrefix, VeinCoreData> VEIN_CORES = new Object2ObjectLinkedOpenHashMap<>();
+    public static final Map<TagPrefix, TagPrefix> VEIN_CORES_FROM_ORE = new Object2ObjectLinkedOpenHashMap<>();
 
     public record VeinCoreData(String stoneName, TagPrefix.OreType oreType) {}
 
@@ -45,6 +46,7 @@ public class GTOMTagPrefixes {
                 .generationCondition(material -> material.hasProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK));
 
         VEIN_CORES.put(veinCoreTag, new VeinCoreData(oreTag.name(), oreType));
+        VEIN_CORES_FROM_ORE.put(oreTag, veinCoreTag);
         return veinCoreTag;
     }
 

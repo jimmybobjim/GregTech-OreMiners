@@ -2,11 +2,14 @@ package org.jimmybobjim.oreminers;
 
 import com.gregtechceu.gtceu.api.addon.GTAddon;
 import com.gregtechceu.gtceu.api.addon.IGTAddon;
+import com.gregtechceu.gtceu.api.data.worldgen.WorldGeneratorUtils;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import net.minecraft.data.recipes.FinishedRecipe;
 import org.jimmybobjim.oreminers.api.tagPrefix.GTOMTagPrefixes;
 import org.jimmybobjim.oreminers.common.blockEntity.GTOMBlockEntities;
 import org.jimmybobjim.oreminers.common.data.GTOMMaterials;
+import org.jimmybobjim.oreminers.common.data.GTOMOres;
+import org.jimmybobjim.oreminers.vein.generator.VeinCoreGenerator;
 
 import java.util.function.Consumer;
 
@@ -39,10 +42,16 @@ public class OreMinersGTAddon implements IGTAddon {
         //CustomRecipes.init(provider);
     }
 
-    @Override
-    public void registerVeinGenerators() {
-        IGTAddon.super.registerVeinGenerators();
-    }
+@Override
+public void registerVeinGenerators() {
+    WorldGeneratorUtils.VEIN_GENERATORS.put(VeinCoreGenerator.ID, VeinCoreGenerator.CODEC);
+    WorldGeneratorUtils.VEIN_GENERATOR_FUNCTIONS.put(VeinCoreGenerator.ID, VeinCoreGenerator::new);
+}
+
+@Override
+public void registerOreVeins() {
+    GTOMOres.modify();
+}
 
     // If you have custom ingredient types, uncomment this & change to match your capability.
     // KubeJS WILL REMOVE YOUR RECIPES IF THESE ARE NOT REGISTERED.
