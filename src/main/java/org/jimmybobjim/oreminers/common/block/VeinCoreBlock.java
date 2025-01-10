@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import org.jimmybobjim.oreminers.GTOreMiners;
 import org.jimmybobjim.oreminers.client.render.VeinCoreBlockRenderer;
 import org.jimmybobjim.oreminers.common.blockEntity.VeinCoreBlockEntity;
 
@@ -36,7 +35,5 @@ public class VeinCoreBlock extends MaterialBlock implements EntityBlock {
         if (level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity) {
             blockEntity.onPlace(state, level, pos);
         }
-
-        GTOreMiners.LOGGER.info("{}", VeinCoreBlockEntity.getPurity(level, pos, defaultBlockState()));
     }
 }

@@ -1,7 +1,6 @@
 package org.jimmybobjim.oreminers.common.blockEntity;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,11 +18,11 @@ import org.jimmybobjim.oreminers.util.Util;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@Getter @Setter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class VeinCoreBlockEntity extends BlockEntity {
     private double purity = -1;
+    @Getter
     private double remaining = 1;
 
     public VeinCoreBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState blockState) {
@@ -38,8 +37,28 @@ public class VeinCoreBlockEntity extends BlockEntity {
         return Math.abs(Util.getRandom(level, state, pos).nextGaussian());
     }
 
+    public void setPurity(double purity) {
+        this.purity = purity;
+        setChanged();
+    }
+
+    public double getPurity() {
+        if (purity != -1) return purity;
+
+        if (level == null) {
+            GTOreMiners.LOGGER.warn("Cannot retrieve vein core purity at ({}). Level is null", worldPosition.toShortString());
+            return -1;
+        }
+
+        return getPurity(level, worldPosition, getBlockState());
+    }
+
+    public void setRemaining(double remaining) {
+        this.remaining = remaining;
+        setChanged();
+    }
+
     public void onPlace(BlockState state, Level level, BlockPos pos) {
-        GTOreMiners.LOGGER.info("onPlace triggered");
         purity = getPurity(level, pos, state);
     }
 
@@ -49,8 +68,6 @@ public class VeinCoreBlockEntity extends BlockEntity {
     }
 
     private void loadData(CompoundTag tag) {
-        GTOreMiners.LOGGER.info("loading the following tag: {}", tag);
-
         purity = tag.getDouble("purity");
         remaining = tag.getDouble("remaining");
     }
