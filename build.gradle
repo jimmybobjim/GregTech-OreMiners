@@ -1,14 +1,14 @@
 plugins {
-    id "dev.architectury.loom" version "1.9.424"
+    id "dev.architectury.loom" version "$architectury_version"
     id "maven-publish"
 }
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = archives_base_name
 }
 
-version = project.mod_version
-group = project.maven_group
+version = mod_version
+group = maven_group
 
 java {
     sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
@@ -23,32 +23,18 @@ sourceSets {
 }
 
 loom {
-    // use this if you are using the official mojang mappings
-    // and want loom to stop warning you about their license
     silentMojangMappingsLicense()
 
-    // since loom 0.10, you are **required** to use the
-    // "forge" block to configure forge-specific features,
-    // such as the mixinConfigs array or datagen
     forge {
-        // specify the mixin configs used in this mod
-        // this will be added to the jar manifest as well!
         mixinConfigs = [
                 "gt_oreminers.mixins.json"
         ]
 
-        // missing access transformers?
-        // don't worry, you can still use them!
-        // note that your AT *MUST* be located at
-        // src/main/resources/META-INF/accesstransformer.cfg
-        // to work as there is currently no config option to change this.
-        // also, any names used in your access transformer will need to be
-        // in SRG mapped ("func_" / "field_" with MCP class names) to work!
-        // (both of these things may be subject to change in the future)
-	dataGen{
+	    dataGen{
             mod(mod_id)
         }
     }
+
 	runConfigs.named("data").configure {
         programArg("--existing=" + file("src/main/resources").absolutePath)
         programArgs("--client", "--server")
@@ -119,31 +105,33 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:$project.minecraft_version"
-    forge "net.minecraftforge:forge:$project.minecraft_version-$project.forge_version"
+    minecraft "com.mojang:minecraft:$minecraft_version"
+    forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
     // layered mappings - Mojmap names, parchment and QM docs and parameters
     mappings loom.layered {
-        it.mappings("org.quiltmc:quilt-mappings:$project.minecraft_version+build.$project.quilt_mappings:intermediary-v2")
-        it.parchment("org.parchmentmc.data:parchment-$project.minecraft_version:$project.parchment_mappings@zip")
+        it.mappings("org.quiltmc:quilt-mappings:$minecraft_version+build.$quilt_mappings:intermediary-v2")
+        it.parchment("org.parchmentmc.data:parchment-$minecraft_version:$parchment_mappings@zip")
         it.officialMojangMappings { nameSyntheticMembers = false }
     }
 
-    modCompileOnly("mezz.jei:jei-$project.minecraft_version-forge-api:$project.jei_version") { transitive = false }
-    modCompileOnly("mezz.jei:jei-$project.minecraft_version-common-api:$project.jei_version") { transitive = false }
+    modCompileOnly("mezz.jei:jei-$minecraft_version-forge-api:$jei_version") { transitive = false }
+    modCompileOnly("mezz.jei:jei-$minecraft_version-common-api:$jei_version") { transitive = false }
 
-    modImplementation("com.gregtechceu.gtceu:gtceu-$project.minecraft_version:$project.gtceu_version") { transitive = false }
-    modImplementation("com.lowdragmc.ldlib:ldlib-forge-$project.minecraft_version:$project.ldlib_version") { transitive = false }
-    modImplementation("com.tterrag.registrate:Registrate:$project.registrate_version")
-    modImplementation("dev.latvian.mods:kubejs-forge:$project.kubejs_version")
+    modImplementation("com.gregtechceu.gtceu:gtceu-$minecraft_version:$gtceu_version") { transitive = false }
+    modImplementation("com.lowdragmc.ldlib:ldlib-forge-$minecraft_version:$ldlib_version") { transitive = false }
+    modImplementation("com.simibubi.create:create-$minecraft_version:$create_version:slim") { transitive = false }
+    modImplementation("com.jozufozu.flywheel:flywheel-forge-$minecraft_version:$flywheel_version")
+    modImplementation("com.tterrag.registrate:Registrate:$registrate_version")
+    modImplementation("dev.latvian.mods:kubejs-forge:$kubejs_version")
 
-    modRuntimeOnly("dev.toma.configuration:configuration-forge-$project.minecraft_version:$project.configuration_version")
-    modRuntimeOnly("mezz.jei:jei-$project.minecraft_version-forge:$project.jei_version") { transitive = false }
+    modRuntimeOnly("dev.toma.configuration:configuration-forge-$minecraft_version:$configuration_version")
+    modRuntimeOnly("mezz.jei:jei-$minecraft_version-forge:$jei_version") { transitive = false }
     
-    modRuntimeOnly ("dev.emi:emi-forge:$project.emi_version+$project.minecraft_version")
+    modRuntimeOnly ("dev.emi:emi-forge:$emi_version+$minecraft_version")
 
     // Mixin Extras
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$project.mixinextras_version"))
-    implementation(include("io.github.llamalad7:mixinextras-forge:$project.mixinextras_version"))
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:$mixinextras_version"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:$mixinextras_version"))
 
     // lombok
     compileOnly "org.projectlombok:lombok:$lombok_version"
@@ -193,7 +181,7 @@ jar {
                 "Specification-Title"     : mod_id,
                 "Specification-Vendor"    : mod_author,
                 "Specification-Version"   : "1",
-                "Implementation-Title"    : project.name,
+                "Implementation-Title"    : name,
                 "Implementation-Version"  : version,
                 "Implementation-Vendor"   : mod_author,
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
