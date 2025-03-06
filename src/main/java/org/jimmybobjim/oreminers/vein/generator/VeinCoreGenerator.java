@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.data.worldgen.GTOreDefinition;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.VeinGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.generator.veins.NoopVeinGenerator;
 import com.gregtechceu.gtceu.api.data.worldgen.ores.OreBlockPlacer;
+import com.lowdragmc.lowdraglib.Platform;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -71,6 +72,7 @@ public class VeinCoreGenerator extends VeinGenerator {
     public Map<BlockPos, OreBlockPlacer> generate(WorldGenLevel level, RandomSource random, GTOreDefinition entry, BlockPos origin) {
         Map<BlockPos, OreBlockPlacer> generatedBlocks = generator.generate(level, random, entry, origin);
         placeCore(generatedBlocks, origin, core);
+        if (Platform.isDevEnv()) GTOreMiners.LOGGER.info("placed vein core at ({})", origin.toShortString());
         return generatedBlocks;
     }
 

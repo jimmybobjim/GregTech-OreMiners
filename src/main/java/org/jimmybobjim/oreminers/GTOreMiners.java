@@ -3,6 +3,7 @@ package org.jimmybobjim.oreminers;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.MaterialRegistryEvent;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.PostMaterialEvent;
+import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.lowdragmc.lowdraglib.LDLib;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.jimmybobjim.oreminers.common.commands.GTOMCommands;
 import org.jimmybobjim.oreminers.common.data.GTOMDatagen;
 import org.jimmybobjim.oreminers.common.data.GTOMMaterials;
+import org.jimmybobjim.oreminers.common.data.machines.GTOMMultiMachines;
 import org.jimmybobjim.oreminers.compat.create.CreateCompat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ public class GTOreMiners {
         eventBus.addListener(this::commonSetup);
         eventBus.addListener(this::addMaterialRegistries);
         eventBus.addListener(this::modifyMaterials);
+        eventBus.addGenericListener(MachineDefinition.class, this::registerMachines);
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.addListener(GTOMCommands::register);
@@ -56,5 +59,9 @@ public class GTOreMiners {
 
     private void modifyMaterials(PostMaterialEvent event) {
         GTOMMaterials.modify(event);
+    }
+
+    private void registerMachines(GTCEuAPI.RegisterEvent<ResourceLocation, MachineDefinition> event) {
+        GTOMMultiMachines.init();
     }
 }
