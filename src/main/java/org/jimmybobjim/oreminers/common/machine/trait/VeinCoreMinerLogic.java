@@ -1,14 +1,11 @@
 package org.jimmybobjim.oreminers.common.machine.trait;
 
-import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.item.tool.GTToolType;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.common.data.GTMaterialItems;
 import com.gregtechceu.gtceu.common.data.GTMaterials;
-import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -20,6 +17,10 @@ import org.jimmybobjim.oreminers.common.machine.VeinCoreMinerMachine;
 import java.util.List;
 import java.util.function.Supplier;
 
+// FIXME getting this error message after every cycle:
+//  "Trying to add more outputs than RecipeType can support, id: gtceu:raw, Max itemOutputs: 0"
+//  Everything seems to work, but it should still probably be fixed to not pollute the logs
+// FIXME recipe idles for a single tick after it finishes
 public class VeinCoreMinerLogic extends RecipeLogic {
     public static final Supplier<ItemStack> PICKAXE_TOOL = () -> {
         ItemStack tool = GTMaterialItems.TOOL_ITEMS.get(GTMaterials.Neutronium, GTToolType.PICKAXE).get().get();
@@ -43,27 +44,37 @@ public class VeinCoreMinerLogic extends RecipeLogic {
         if (level == null) return;
         BlockPos pos = machine.getVeinCorePos();
         BlockState state = level.getBlockState(pos);
-        if (VeinCoreMinerMachineMineable.isTierTooHigh(level, pos, state, machine.getTier())) {
-            machine.addDisplayText(List.of(Component.translatable("gt_oreminers.multiblock.vein_core_miner.tier_too_high")));
-            return;
-        };
+
+        boolean tierTooHighFlag = VeinCoreMinerMachineMineable.isTierTooHigh(level, pos, state, machine.getTier());
+        machine.setTierTooHighFlag(tierTooHighFlag);
+        if (tierTooHighFlag) return;
+
         List<ItemStack> drops = VeinCoreMinerMachineMineable.getVeinCoreDrops(level, pos, state, PICKAXE_TOOL.get());
         if (drops.isEmpty()) return;
 
         if (level instanceof ServerLevel) {
             lastRecipe = null;
 
-            GTRecipe recipe = GTRecipeBuilder.ofRaw()
-                    .duration(20)
-                    .EUt(GTValues.VA[0])
-                    .inputFluids(GTMaterials.DrillingFluid.getFluid(2))
-                    .outputItems(drops.get(0))
-                    .buildRawRecipe();
-
+            GTRecipe recipe = VeinCoreMinerMachineMineable.getVeinCoreRecipe(level, pos, state, PICKAXE_TOOL.get());
             if (recipe.matchRecipe(machine).isSuccess() && recipe.matchTickRecipe(machine).isSuccess()) {
                 setupRecipe(recipe);
-                VeinCoreMinerMachineMineable.depleteVeinCore(level, pos, state);
             }
         }
+    }
+
+    @Override
+    public void onRecipeFinish() {
+        super.onRecipeFinish();
+
+        VeinCoreMinerMachine machine = getMachine();
+        Level level = machine.getLevel();
+        if (level == null) return;
+        BlockPos pos = machine.getVeinCorePos();
+        BlockState state = level.getBlockState(pos);
+        VeinCoreMinerMachineMineable.depleteVeinCore(level, pos, state);
+    }
+
+    public void changeVeinCore() {
+        resetRecipeLogic();
     }
 }

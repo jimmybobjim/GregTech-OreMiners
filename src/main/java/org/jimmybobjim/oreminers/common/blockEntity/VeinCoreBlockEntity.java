@@ -33,8 +33,8 @@ public class VeinCoreBlockEntity extends BlockEntity {
         super(GTOMBlockEntities.VEIN_CORE.get(), pos, state);
     }
 
-    public static double getPurity(Level level, BlockPos pos, BlockState state) {
-        return Math.abs(Util.getRandom(level, state, pos).nextGaussian());
+    public static double generatePurity(Level level, BlockPos pos, BlockState state) {
+        return Util.generateVeinCorePurity(Util.getRandom(level, state, pos));
     }
 
     public void setPurity(double purity) {
@@ -50,7 +50,7 @@ public class VeinCoreBlockEntity extends BlockEntity {
             return -1;
         }
 
-        return getPurity(level, worldPosition, getBlockState());
+        return generatePurity(level, worldPosition, getBlockState());
     }
 
     public void setRemaining(double remaining) {
@@ -58,8 +58,13 @@ public class VeinCoreBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    public void deplete() {
+        remaining -= 0.00001;
+        setChanged();
+    }
+
     public void onPlace(BlockState state, Level level, BlockPos pos) {
-        purity = getPurity(level, pos, state);
+        purity = generatePurity(level, pos, state);
     }
 
     private void saveData(CompoundTag tag) {
