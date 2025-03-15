@@ -20,7 +20,7 @@ public class GTOMPredicates {
 
             machine.setVeinCorePos(pos);
 
-            if (oldState != null && !oldState.equals(newState)) {
+            if (!newState.equals(oldState)) {
                 machine.updatePattern(pos, oldState, newState);
             }
             machine.setOldState(newState);

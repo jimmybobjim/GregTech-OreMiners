@@ -5,9 +5,11 @@ import com.gregtechceu.gtceu.api.machine.multiblock.WorkableElectricMultiblockMa
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
@@ -19,13 +21,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine implements IVeinCoreMinerMachine {
     /**
      * the maximum tier of vein core this miner can mine
      */
+    @Getter
     private final int tier;
 
     @Getter
@@ -38,11 +40,15 @@ public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine impl
 
     private boolean invalidFlag = false;
     @Setter
-    private boolean tierTooHighFlag = false;
+    private boolean veinCoreTierTooHighFlag = false;
 
     public VeinCoreMinerMachine(IMachineBlockEntity holder, int tier, Object... args) {
         super(holder, args);
         this.tier = tier;
+    }
+
+    public boolean canWork() {
+        return !invalidFlag && !veinCoreTierTooHighFlag;
     }
 
     @Override
@@ -61,8 +67,7 @@ public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine impl
 
         List<Component> data = new ArrayList<>();
         if (isFormed()) {
-            if (invalidFlag) data.add(Component.translatable("gt_oreminers.multiblock.pattern.error.invalid_block"));
-            if (tierTooHighFlag) data.add(Component.translatable("gt_oreminers.multiblock.vein_core_miner.tier_too_high"));
+            addErrors(data);
             if (data.isEmpty()) addVeinCoreData(data);
         }
 
@@ -72,10 +77,15 @@ public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine impl
         }
     }
 
+    protected void addErrors(List<Component> data) {
+        if (invalidFlag) data.add(Component.translatable("gt_oreminers.multiblock.pattern.error.invalid_block").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
+        if (veinCoreTierTooHighFlag) data.add(Component.translatable("gt_oreminers.multiblock.vein_core_miner.tier_too_high").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
+    }
+
     private void addVeinCoreData(List<Component> data) {
         Level level = getLevel();
         @Nullable BlockPos pos = veinCorePos;
-        if (level == null || pos == null)  return;
+        if (level == null || pos == null) return;
         BlockState state = level.getBlockState(pos);
         data.add(state.getBlock().getName());
         if (state.getBlock() instanceof VeinCoreMinerMachineMineable veinCore) {
@@ -95,13 +105,5 @@ public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine impl
         invalidFlag = newState.isAir() || newState.liquid();
 
         getRecipeLogic().changeVeinCore();
-    }
-
-    /**
-     * Vein core miners exist for every other tier
-     * (miners above tier 3 are not added in this mod)
-     */
-    public static int veinCoreTierToVoltageTier(int veinCoreTier) {
-        return veinCoreTier * 2;
     }
 }

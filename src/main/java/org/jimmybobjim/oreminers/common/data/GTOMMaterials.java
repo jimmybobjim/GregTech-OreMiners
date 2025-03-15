@@ -2,6 +2,7 @@ package org.jimmybobjim.oreminers.common.data;
 
 import com.google.common.collect.ImmutableTable;
 import com.gregtechceu.gtceu.api.GTCEuAPI;
+import com.gregtechceu.gtceu.api.GTValues;
 import com.gregtechceu.gtceu.api.block.MaterialBlock;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
 import com.gregtechceu.gtceu.api.data.chemical.material.event.PostMaterialEvent;
@@ -89,11 +90,11 @@ public class GTOMMaterials {
     public static void modify(PostMaterialEvent event) {
         GTOreMiners.LOGGER.info("adding GregTech: OreMiners vein core blocks");
 
-        setVeinCore(GTMaterials.Coal, 1);
-        setVeinCore(GTMaterials.Redstone, 1);
+        setVeinCore(GTMaterials.Coal, 1, GTValues.VA[2], 600, 100_000);
+        setVeinCore(GTMaterials.Redstone, 2, GTValues.VA[4], 600, 100_000);
     }
 
-    public static void setVeinCore(Material material, int level) {
-        material.setProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK, new VeinCoreBlockProperty(level));
+    public static void setVeinCore(Material material, int veinCoreTier, int EUt, int duration, int totalDrops) {
+        material.setProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK, new VeinCoreBlockProperty(veinCoreTier, EUt, duration, totalDrops));
     }
 }

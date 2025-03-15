@@ -53,13 +53,17 @@ public class VeinCoreBlockEntity extends BlockEntity {
         return generatePurity(level, worldPosition, getBlockState());
     }
 
+    public int getDropChance() {
+        return (int) Math.round(getPurity()*10000);
+    }
+
     public void setRemaining(double remaining) {
         this.remaining = remaining;
         setChanged();
     }
 
-    public void deplete() {
-        remaining -= 0.00001;
+    public void deplete(double amount) {
+        remaining -= amount;
         setChanged();
     }
 

@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jimmybobjim.oreminers.common.block.VeinCoreMinerMachineMineable;
 import org.jimmybobjim.oreminers.common.machine.VeinCoreMinerMachine;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 // FIXME getting this error message after every cycle:
@@ -45,17 +44,15 @@ public class VeinCoreMinerLogic extends RecipeLogic {
         BlockPos pos = machine.getVeinCorePos();
         BlockState state = level.getBlockState(pos);
 
-        boolean tierTooHighFlag = VeinCoreMinerMachineMineable.isTierTooHigh(level, pos, state, machine.getTier());
-        machine.setTierTooHighFlag(tierTooHighFlag);
-        if (tierTooHighFlag) return;
+        machine.setVeinCoreTierTooHighFlag(
+                VeinCoreMinerMachineMineable.isVeinCoreTierTooHigh(level, pos, state, machine.getTier()));
 
-        List<ItemStack> drops = VeinCoreMinerMachineMineable.getVeinCoreDrops(level, pos, state, PICKAXE_TOOL.get());
-        if (drops.isEmpty()) return;
+        if (!machine.canWork()) return;
 
         if (level instanceof ServerLevel) {
-            lastRecipe = null;
-
             GTRecipe recipe = VeinCoreMinerMachineMineable.getVeinCoreRecipe(level, pos, state, PICKAXE_TOOL.get());
+            if (recipe == null) return;
+            lastRecipe = null;
             if (recipe.matchRecipe(machine).isSuccess() && recipe.matchTickRecipe(machine).isSuccess()) {
                 setupRecipe(recipe);
             }

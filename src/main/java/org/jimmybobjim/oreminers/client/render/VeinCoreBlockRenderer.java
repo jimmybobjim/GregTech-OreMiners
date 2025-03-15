@@ -56,7 +56,7 @@ public class VeinCoreBlockRenderer {
     // TODO different textures for different tiers of vein cores (and just completely remake the existing textures)
     public static void cloneBlockModel(ResourceLocation modelId, TagPrefix prefix, Material material) {
         VeinCoreBlockProperty property = material.getProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK);
-        Preconditions.checkNotNull(property, "material %s has no ore property, but needs one for an ore model!".formatted(material.getName()));
+        Preconditions.checkNotNull(property, "material %s has no vein core property, but needs one for a vein core model!".formatted(material.getName()));
 
         // read the base ore model JSON
         JsonObject original;

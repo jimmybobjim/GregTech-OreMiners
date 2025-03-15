@@ -3,9 +3,11 @@ package org.jimmybobjim.oreminers.common.block;
 import com.gregtechceu.gtceu.api.block.MaterialBlock;
 import com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper;
 import com.gregtechceu.gtceu.api.data.chemical.material.Material;
-import com.gregtechceu.gtceu.api.data.chemical.material.properties.OreProperty;
 import com.gregtechceu.gtceu.api.data.chemical.material.properties.PropertyKey;
 import com.gregtechceu.gtceu.api.data.tag.TagPrefix;
+import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.common.data.GTMaterials;
+import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.lowdragmc.lowdraglib.Platform;
 import net.minecraft.core.BlockPos;
@@ -18,16 +20,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import org.jimmybobjim.oreminers.GTOreMiners;
 import org.jimmybobjim.oreminers.api.propertyKeys.GTOMPropertyKeys;
+import org.jimmybobjim.oreminers.api.propertyKeys.VeinCoreBlockProperty;
 import org.jimmybobjim.oreminers.api.tagPrefix.GTOMTagPrefixes;
 import org.jimmybobjim.oreminers.client.render.VeinCoreBlockRenderer;
 import org.jimmybobjim.oreminers.common.blockEntity.VeinCoreBlockEntity;
-import org.jimmybobjim.oreminers.util.ChancedItemDrop;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 public class VeinCoreBlock extends MaterialBlock implements EntityBlock, VeinCoreMinerMachineMineable {
@@ -54,73 +54,58 @@ public class VeinCoreBlock extends MaterialBlock implements EntityBlock, VeinCor
         }
     }
 
-    /**
-     * copied from {@link com.gregtechceu.gtceu.data.recipe.generated.OreRecipeHandler#processOre(TagPrefix, Material, OreProperty, Consumer)}
-     */
     @Override
-    public List<ItemStack> getDrops(Level level, BlockPos pos, BlockState state) {
-        OreProperty property = material.getProperty(PropertyKey.ORE);
+    public @Nullable GTRecipe getRecipe(Level level, BlockPos pos, BlockState state) {
+        if (!(level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity)) return null;
+        if (!material.hasProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK)) return null;
 
-        return List.of(GTUtil.copyAmount(
-                property.getOreMultiplier() * 2 * (GTOMTagPrefixes.VEIN_CORES.get(tagPrefix).oreType().isDoubleDrops() ? 2 : 1),
-                ChemicalHelper.get(TagPrefix.crushed, material)));
-    }
+        VeinCoreBlockProperty property = material.getProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK);
 
-    /**
-     * copied from {@link com.gregtechceu.gtceu.data.recipe.generated.OreRecipeHandler#processOre(TagPrefix, Material, OreProperty, Consumer)}
-     */
-    @Override
-    public List<ChancedItemDrop> getChancedDrops(Level level, BlockPos pos, BlockState state) {
-        List<ChancedItemDrop> drops = new ArrayList<>();
+        ItemStack drops = GTUtil.copyAmount(
+                material.getProperty(PropertyKey.ORE).getOreMultiplier() * 2 * (GTOMTagPrefixes.VEIN_CORES.get(tagPrefix).oreType().isDoubleDrops() ? 2 : 1),
+                ChemicalHelper.get(TagPrefix.crushed, material));
+
+        if (drops.isEmpty()) return null;
+
+        GTRecipeBuilder builder = GTRecipeBuilder.ofRaw()
+                .duration(property.duration())
+                .EUt(property.EUt())
+                .inputFluids(GTMaterials.DrillingFluid.getFluid(10))
+                .chancedOutput(drops, blockEntity.getDropChance(), 0);
 
         GTOMTagPrefixes.VEIN_CORES.get(tagPrefix).oreTag().secondaryMaterials().forEach(materialStack -> {
             if (materialStack.material().hasProperty(PropertyKey.DUST)) {
-                drops.add(new ChancedItemDrop(ChemicalHelper.getGem(materialStack), 6700, 800));
+                builder.chancedOutput(ChemicalHelper.getGem(materialStack), 6700, 800);
             }
         });
 
-        return drops;
+        return builder.buildRawRecipe();
     }
 
     @Override
     public void deplete(Level level, BlockPos pos, BlockState state) {
-        if (level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity) {
-            blockEntity.deplete();
+        if (level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity && material.hasProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK)) {
+            int totalDrops = material.getProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK).totalDrops();
+            if (totalDrops == -1) return;
+            blockEntity.deplete(1.0 / totalDrops);
         }
-    }
-
-    public double getRemaining(Level level, BlockPos pos, BlockState state) {
-        if (level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity) {
-            return blockEntity.getRemaining();
-        }
-
-        GTOreMiners.LOGGER.warn("Cannot get remaining from vein core");
-        return -1;
     }
 
     @Override
-    public double getDropChance(Level level, BlockPos pos, BlockState state) {
-        if (level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity) {
-            return blockEntity.getPurity();
-        }
-
-        GTOreMiners.LOGGER.warn("Cannot get purity of vein core");
-        return -1;
-    }
-
-    @Override
-    public int getTier(Level level, BlockPos pos, BlockState state) {
-        if (material.hasProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK)) {
-            return material.getProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK).getLevel();
-        } else {
+    public int getVeinCoreTier(Level level, BlockPos pos, BlockState state) {
+        if (!material.hasProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK)) {
             GTOreMiners.LOGGER.warn("vein core block {} is missing vein_core_block property key", this);
             return -1;
         }
+
+        return material.getProperty(GTOMPropertyKeys.VEIN_CORE_BLOCK).veinCoreTier();
     }
 
     @Override
     public void addDisplayText(Level level, BlockPos pos, BlockState state, List<Component> textList) {
-        textList.add(Component.translatable("gt_oreminers.block.vein_core.remaining", remainingFormat.format(getRemaining(level, pos, state)*100)));
-        textList.add(Component.translatable("gt_oreminers.block.vein_core.purity", purityFormat.format(getDropChance(level, pos, state)*100)));
+        if (!(level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity)) return;
+
+        textList.add(Component.translatable("gt_oreminers.block.vein_core.remaining", remainingFormat.format(blockEntity.getRemaining()*100)));
+        textList.add(Component.translatable("gt_oreminers.block.vein_core.purity", purityFormat.format(blockEntity.getPurity()*100)));
     }
 }

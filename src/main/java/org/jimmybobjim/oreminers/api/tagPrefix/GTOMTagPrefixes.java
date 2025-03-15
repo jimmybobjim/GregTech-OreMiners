@@ -32,7 +32,7 @@ public class GTOMTagPrefixes {
             blackstoneVeinCore = veinCoreTagPrefix(TagPrefix.oreBlackstone),
             endstoneVeinCore = veinCoreTagPrefix(TagPrefix.oreEndstone);
 
-    // TODO maybe a tag for the level of the vein core?
+    // TODO maybe a tag for the tier of the vein core?
     public static TagPrefix veinCoreTagPrefix(TagPrefix oreTag) {
         TagPrefix.OreType oreType = TagPrefix.ORES.get(oreTag);
         if (oreType == null) throw new IllegalArgumentException(oreTag + " is not contained in TagPrefix.ORES");
