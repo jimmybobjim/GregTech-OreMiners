@@ -11,28 +11,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
+import org.jimmybobjim.oreminers.util.Util;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public interface VeinCoreMinerMachineMineable {
-    static List<ItemStack> getDefaultDrops(ServerLevel level, BlockPos veinCorePos, BlockState veinCoreState, ItemStack pickaxeTool) {
-        return veinCoreState.getDrops(new LootParams.Builder(level)
-                .withParameter(LootContextParams.BLOCK_STATE, veinCoreState)
-                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(veinCorePos))
-                .withParameter(LootContextParams.TOOL, pickaxeTool));
-    }
-
     static @Nullable GTRecipe getVeinCoreRecipe(Level level, BlockPos veinCorePos, BlockState veinCoreState, ItemStack pickaxeTool) {
         if (veinCoreState.getBlock() instanceof VeinCoreMinerMachineMineable block) {
             return block.getRecipe(level, veinCorePos, veinCoreState);
         }
 
         List<ItemStack> drops = level instanceof ServerLevel serverLevel
-                ? getDefaultDrops(serverLevel, veinCorePos, veinCoreState, pickaxeTool)
+                ? Util.getDefaultDrops(serverLevel, veinCorePos, veinCoreState, pickaxeTool)
                 : List.of();
 
         return GTRecipeBuilder.ofRaw()
