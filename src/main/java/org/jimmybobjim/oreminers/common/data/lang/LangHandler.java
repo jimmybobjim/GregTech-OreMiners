@@ -11,9 +11,14 @@ public class LangHandler extends com.gregtechceu.gtceu.data.lang.LangHandler {
         provider.add("command.gt_oreminers.vein_core.set_remaining.success", "Changed remaining capacity at (%s) from %s to %s");
         provider.add("command.gt_oreminers.vein_core.get_remaining.success", "Remaining capacity at (%s) is %s");
 
+        provider.add("gt_oreminers.formatting.list_separator_single_line", ", ");
+        provider.add("gt_oreminers.formatting.list_separator_multiline", "- ");
+
         provider.add("gt_oreminers.multiblock.vein_core_miner.tier_too_high", "Tier too high!");
+        provider.add("gt_oreminers.multiblock.vein_core_miner.depleted", "Vein core depleted!");
         provider.add("gt_oreminers.multiblock.pattern.error.invalid_block", "Invalid block!");
-        provider.add("gt_oreminers.block.vein_core.remaining", "Remaining.. %s%%");
-        provider.add("gt_oreminers.block.vein_core.purity", "Purity.......... %s%%");
+        provider.add("gt_oreminers.block.vein_core.remaining", "Remaining§8.. §f%s");
+        provider.add("gt_oreminers.block.vein_core.purity", "Purity§8.......... §f%s");
+        provider.add("gt_oreminers.block.vein_core.drops", "Drops:");
     }
 }

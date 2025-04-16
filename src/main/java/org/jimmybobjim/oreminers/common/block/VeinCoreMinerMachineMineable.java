@@ -16,6 +16,11 @@ import org.jimmybobjim.oreminers.util.Util;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * you generally shouldn't be calling the individual methods added to a class by this interface,
+ * the static methods of the same name include handling for non-{@code VeinCoreMinerMachineMineable} blocks
+ * and thus are preferred
+ */
 public interface VeinCoreMinerMachineMineable {
     static @Nullable GTRecipe getVeinCoreRecipe(Level level, BlockPos veinCorePos, BlockState veinCoreState, ItemStack pickaxeTool) {
         if (veinCoreState.getBlock() instanceof VeinCoreMinerMachineMineable block) {
@@ -43,17 +48,28 @@ public interface VeinCoreMinerMachineMineable {
         }
     }
 
-    static boolean isVeinCoreTierTooHigh(Level level, BlockPos veinCorePos, BlockState veinCoreState, int machineTier) {
-        if (veinCoreState.getBlock() instanceof VeinCoreMinerMachineMineable block) {
-            return block.getVeinCoreTier(level, veinCorePos, veinCoreState) > machineTier;
-        }
+    static boolean isVeinCoreDepleted(Level level, BlockPos pos, BlockState state) {
+        return state.getBlock() instanceof VeinCoreMinerMachineMineable block && block.isDepleted(level, pos, state);
+    }
 
-        return false;
+    static boolean isVeinCoreTierTooHigh(Level level, BlockPos veinCorePos, BlockState veinCoreState, int machineTier) {
+        return veinCoreState.getBlock() instanceof VeinCoreMinerMachineMineable block
+                && block.getVeinCoreTier(level, veinCorePos, veinCoreState) > machineTier;
+    }
+
+    static void addVeinCoreDisplayText(Level level, BlockPos pos, BlockState state, List<Component> textList) {
+        if (state.getBlock() instanceof VeinCoreMinerMachineMineable block) {
+            block.addDisplayText(level, pos, state, textList);
+        } else {
+            textList.add(state.getBlock().getName());
+        }
     }
 
     @Nullable GTRecipe getRecipe(Level level, BlockPos pos, BlockState state);
 
     void deplete(Level level, BlockPos pos, BlockState state);
+
+    boolean isDepleted(Level level, BlockPos pos, BlockState state);
 
     int getVeinCoreTier(Level level, BlockPos pos, BlockState state);
 

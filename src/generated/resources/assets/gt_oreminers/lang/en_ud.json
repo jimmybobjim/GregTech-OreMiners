@@ -5,8 +5,12 @@
   "command.gt_oreminers.vein_core.not_vein_core": "ǝɹoɔ uıǝʌ ɐ ʇou sı )%s(",
   "command.gt_oreminers.vein_core.set_purity.success": "%s oʇ %s ɯoɹɟ )%s( ʇɐ ʎʇıɹnd pǝbuɐɥƆ",
   "command.gt_oreminers.vein_core.set_remaining.success": "%s oʇ %s ɯoɹɟ )%s( ʇɐ ʎʇıɔɐdɐɔ buıuıɐɯǝɹ pǝbuɐɥƆ",
-  "gt_oreminers.block.vein_core.purity": "%s%% ˙˙˙˙˙˙˙˙˙˙ʎʇıɹnԀ",
-  "gt_oreminers.block.vein_core.remaining": "%s%% ˙˙buıuıɐɯǝᴚ",
+  "gt_oreminers.block.vein_core.drops": ":sdoɹᗡ",
+  "gt_oreminers.block.vein_core.purity": "%sɟ§ ˙˙˙˙˙˙˙˙˙˙8§ʎʇıɹnԀ",
+  "gt_oreminers.block.vein_core.remaining": "%sɟ§ ˙˙8§buıuıɐɯǝᴚ",
+  "gt_oreminers.formatting.list_separator_multiline": " -",
+  "gt_oreminers.formatting.list_separator_single_line": " '",
   "gt_oreminers.multiblock.pattern.error.invalid_block": "¡ʞɔoןq pıןɐʌuI",
+  "gt_oreminers.multiblock.vein_core_miner.depleted": "¡pǝʇǝןdǝp ǝɹoɔ uıǝΛ",
   "gt_oreminers.multiblock.vein_core_miner.tier_too_high": "¡ɥbıɥ ooʇ ɹǝı⟘"
 }

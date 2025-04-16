@@ -11,12 +11,14 @@ import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.lowdragmc.lowdraglib.Platform;
 import lombok.Getter;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -92,6 +94,9 @@ public class VeinCoreBlock extends Block implements EntityBlock, VeinCoreMinerMa
     private int maxDropsChance;
     private boolean dropsSet = false;
 
+    private List<Component> materials;
+    private boolean materialsSet = false;
+
     private Optional<Material> maxMaterial = Optional.empty();
     private boolean maxMaterialSet = false;
 
@@ -110,7 +115,7 @@ public class VeinCoreBlock extends Block implements EntityBlock, VeinCoreMinerMa
         if (registerModel && Platform.isClient()) VeinCoreBlockRenderer.create(this);
     }
 
-    private Optional<Material> getMaxMaterial() {
+    public Optional<Material> getMaxMaterial() {
         if (maxMaterialSet) return maxMaterial;
         maxMaterialSet = true;
         maxMaterial = generator.get().getValidMaterialsChances().stream()
@@ -126,6 +131,36 @@ public class VeinCoreBlock extends Block implements EntityBlock, VeinCoreMinerMa
                 ChemicalHelper.get(TagPrefix.crushed, material)));
     }
 
+    private void setMaterials(ServerLevel level, BlockPos pos) {
+        materialsSet = true;
+        materials = generator.get().getAllEntries().stream()
+                .map(Map.Entry::getKey)
+                .map(value -> value.map(
+                        state -> Util.join(
+                                Component.translatable("gt_oreminers.formatting.list_separator_single_line")
+                                        .withStyle(ChatFormatting.GRAY),
+                                Util.getDefaultDrops(level, pos, state, VeinCoreMinerLogic.PICKAXE_TOOL.get()).stream()
+                                        .filter(Predicate.not(ItemStack::isEmpty))
+                                        .map(ItemStack::getItem)
+                                        .map(Item::getDescription)
+                                        .map(component -> component.copy().withStyle(ChatFormatting.GREEN))
+                                        .toList()
+                        ),
+                        Material::getLocalizedName
+                ))
+                .filter(Predicate.not(component -> Objects.equals(component, Component.empty())))
+                .map(component -> (Component) Component
+                        .translatable("gt_oreminers.formatting.list_separator_multiline")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(component.copy().withStyle(ChatFormatting.GREEN)))
+                .toList();
+    }
+
+    public List<Component> getMaterials(Level level, BlockPos pos) {
+        if (!materialsSet && level instanceof ServerLevel serverLevel) setMaterials(serverLevel, pos);
+        return materials;
+    }
+
     private void setDrops(ServerLevel level, BlockPos pos) {
         dropsSet = true;
         maxDropsChance = generator.get().getAllEntries().stream()
@@ -139,12 +174,12 @@ public class VeinCoreBlock extends Block implements EntityBlock, VeinCoreMinerMa
                 .sum();
     }
 
-    private List<Map.Entry<List<ItemStack>, Integer>> getDrops(Level level, BlockPos pos) {
+    public List<Map.Entry<List<ItemStack>, Integer>> getDrops(Level level, BlockPos pos) {
         if (!dropsSet && level instanceof ServerLevel serverLevel) setDrops(serverLevel, pos);
         return drops;
     }
 
-    private int getMaxDropsChance(Level level, BlockPos pos) {
+    public int getMaxDropsChance(Level level, BlockPos pos) {
         if (!dropsSet && level instanceof ServerLevel serverLevel) setDrops(serverLevel, pos);
         return maxDropsChance;
     }
@@ -209,6 +244,11 @@ public class VeinCoreBlock extends Block implements EntityBlock, VeinCoreMinerMa
     }
 
     @Override
+    public boolean isDepleted(Level level, BlockPos pos, BlockState state) {
+        return !(level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity) || blockEntity.getRemaining() <= 0;
+    }
+
+    @Override
     public int getVeinCoreTier(Level level, BlockPos pos, BlockState state) {
         return recipeData.veinCoreTier();
     }
@@ -217,7 +257,11 @@ public class VeinCoreBlock extends Block implements EntityBlock, VeinCoreMinerMa
     public void addDisplayText(Level level, BlockPos pos, BlockState state, List<Component> textList) {
         if (!(level.getBlockEntity(pos) instanceof VeinCoreBlockEntity blockEntity)) return;
 
-        textList.add(Component.translatable("gt_oreminers.block.vein_core.remaining", remainingFormat.format(blockEntity.getRemaining()*100)));
-        textList.add(Component.translatable("gt_oreminers.block.vein_core.purity", purityFormat.format(blockEntity.getPurity()*100)));
+        textList.add(state.getBlock().getName().withStyle(ChatFormatting.BLUE));
+        textList.add(Component.translatable("gt_oreminers.block.vein_core.remaining", Util.formatPercent(blockEntity.getRemaining())));
+        textList.add(Component.translatable("gt_oreminers.block.vein_core.purity", Util.formatPercent(blockEntity.getPurity())));
+        textList.add(Component.empty());
+        textList.add(Component.translatable("gt_oreminers.block.vein_core.drops").withStyle(ChatFormatting.GREEN));
+        textList.addAll(getMaterials(level, pos));
     }
 }
