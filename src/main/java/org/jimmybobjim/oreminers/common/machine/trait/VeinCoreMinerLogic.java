@@ -45,9 +45,7 @@ public class VeinCoreMinerLogic extends RecipeLogic {
         BlockPos pos = machine.getVeinCorePos();
         BlockState state = level.getBlockState(pos);
 
-        machine.setVeinCoreTierTooHighFlag(
-                VeinCoreMinerMachineMineable.isVeinCoreTierTooHigh(level, pos, state, machine.getTier()));
-        if (!machine.canWork()) return null;
+        if (machine.checkFlags(level, pos, state)) return null;
 
         GTRecipe recipe = VeinCoreMinerMachineMineable.getVeinCoreRecipe(level, pos, state, PICKAXE_TOOL.get());
         if (recipe != null && recipe.matchRecipe(machine).isSuccess() && recipe.matchTickRecipe(machine).isSuccess()) {
@@ -62,7 +60,10 @@ public class VeinCoreMinerLogic extends RecipeLogic {
         lastRecipe = null;
         GTRecipe recipe = getRecipe();
         if (recipe != null) {
-            if (machine.alwaysTryModifyRecipe()) recipe = machine.fullModifyRecipe(recipe);
+            if (machine.alwaysTryModifyRecipe()) {
+                GTRecipe modified = machine.fullModifyRecipe(recipe);
+                if (modified != null) recipe = modified;
+            }
 
             if (recipe.matchRecipe(machine).isSuccess() && recipe.matchTickRecipe(machine).isSuccess()) {
                 setupRecipe(recipe);

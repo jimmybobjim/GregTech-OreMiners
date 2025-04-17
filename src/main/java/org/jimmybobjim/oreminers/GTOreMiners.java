@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class GTOreMiners {
     public static final String MOD_ID = "gt_oreminers";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static GTRegistrate REGISTRATE = GTRegistrate.create(GTOreMiners.MOD_ID);
+    public static final GTRegistrate REGISTRATE = GTRegistrate.create(GTOreMiners.MOD_ID);
 
     public static ResourceLocation id(String path) {
         return new ResourceLocation(MOD_ID, path);

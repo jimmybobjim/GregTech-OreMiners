@@ -39,7 +39,6 @@ public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine impl
     private BlockPos veinCorePos = null;
 
     private boolean invalidVeinCoreFlag = false;
-    @Setter
     private boolean veinCoreTierTooHighFlag = false;
     private boolean veinCoreDepletedFlag = false;
 
@@ -50,6 +49,17 @@ public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine impl
 
     public boolean canWork() {
         return !invalidVeinCoreFlag && !veinCoreTierTooHighFlag && !veinCoreDepletedFlag;
+    }
+
+    /**
+     * @return is the recipe not able to be completed
+     */
+    @SuppressWarnings("deprecation")
+    public boolean checkFlags(@Nullable Level level, BlockPos pos, BlockState state) {
+        invalidVeinCoreFlag = state.isAir() || state.liquid();
+        veinCoreTierTooHighFlag = level == null || VeinCoreMinerMachineMineable.isVeinCoreTierTooHigh(level, pos, state, getTier());
+        veinCoreDepletedFlag = level == null || VeinCoreMinerMachineMineable.isVeinCoreDepleted(level, pos, state);
+        return !canWork();
     }
 
     @Override
@@ -102,10 +112,8 @@ public class VeinCoreMinerMachine extends WorkableElectricMultiblockMachine impl
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void updatePattern(BlockPos pos, BlockState oldState, BlockState newState) {
-        invalidVeinCoreFlag = newState.isAir() || newState.liquid();
-        veinCoreDepletedFlag = getLevel() == null || VeinCoreMinerMachineMineable.isVeinCoreDepleted(getLevel(), pos, newState);
+        checkFlags(getLevel(), pos, newState);
 
         getRecipeLogic().changeVeinCore();
     }

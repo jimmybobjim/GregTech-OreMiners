@@ -36,7 +36,7 @@ public class GTOMCommands {
                         .then(literal("set_remaining")
                                 .requires(source -> source.hasPermission(2))
                                 .then(argument("position", BlockPosArgument.blockPos())
-                                        .then(argument("purity", DoubleArgumentType.doubleArg(0))
+                                        .then(argument("remaining", DoubleArgumentType.doubleArg(0))
                                                 .executes(setVeinCore(VeinCoreBlockEntity::getRemaining, VeinCoreBlockEntity::setRemaining, "remaining"))
                                         )
                                 )
